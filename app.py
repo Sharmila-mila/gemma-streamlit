@@ -1,20 +1,19 @@
 import streamlit as st
 import requests
 
-# 🔴 IMPORTANT: Replace with YOUR CURRENT ngrok URL
-URL = "https://abcd-1234.ngrok-free.app/api/chat"
+URL = "http://localhost:11434/api/chat"
 MODEL = "gemma:2b"
 
 st.set_page_config(page_title="Offline Gemma Chatbot")
 
 st.title("🤖 Offline AI Chatbot (Gemma + Ollama)")
-st.write("Streamlit Cloud UI + Local Ollama via ngrok")
+st.write("Runs fully offline on your laptop")
 
 # Store chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Display chat history
+# Display previous messages
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
@@ -30,39 +29,28 @@ if user_input:
     with st.chat_message("user"):
         st.markdown(user_input)
 
-    # Ollama payload
+    # Send request to Ollama (IMPORTANT FIX HERE)
     payload = {
         "model": MODEL,
-        "stream": False,
+        "stream": False,   # ✅ FIX
         "messages": [
             {"role": "system", "content": "You are a helpful AI tutor."},
             {"role": "user", "content": user_input}
         ]
     }
 
-    # 🔑 REQUIRED HEADER FOR NGROK FREE VERSION
-    headers = {
-        "ngrok-skip-browser-warning": "true"
-    }
-
     try:
-        response = requests.post(
-            URL,
-            json=payload,
-            headers=headers,
-            timeout=60
-        )
+        response = requests.post(URL, json=payload)
         response.raise_for_status()
 
         reply = response.json()["message"]["content"]
 
     except Exception as e:
-        reply = f"❌ Error connecting to Ollama: {e}"
+        reply = f"❌ Error: {e}"
 
-    # Show AI response
+    # Show AI reply
     st.session_state.messages.append(
         {"role": "assistant", "content": reply}
     )
     with st.chat_message("assistant"):
-        st.markdown(reply)
-
+        st.markdown(reply) 
