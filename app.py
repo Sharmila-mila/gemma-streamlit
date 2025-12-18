@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-URL = "http://localhost:11434/api/chat"
+URL = "https://abcd-1234.ngrok-free.app/api/chat"
 MODEL = "gemma:2b"
 
 st.set_page_config(page_title="Offline Gemma Chatbot")
@@ -54,3 +54,4 @@ if user_input:
     )
     with st.chat_message("assistant"):
         st.markdown(reply)
+
